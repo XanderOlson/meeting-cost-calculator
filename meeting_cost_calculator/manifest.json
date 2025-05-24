@@ -12,5 +12,13 @@
     "default_popup": "popup/popup.html",
     "default_title": "Set Meeting Cost"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage"],
+  "host_permissions": ["*://calendar.google.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://calendar.google.com/*"],
+      "js": ["content_scripts/calendar_integration.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
