@@ -42,10 +42,52 @@ if (chrome.storage && chrome.storage.onChanged) {
   console.warn("Content Script: chrome.storage.onChanged API not available. Real-time updates disabled.");
 }
 
-// Placeholder for the function to be defined in Task 3.2
 function processMeetingDetails(eventPopupElement) {
-    console.log('Placeholder: processMeetingDetails called for', eventPopupElement);
-    // Future: Add logic to extract details, calculate and display cost (Tasks 3.2-3.5)
+  console.log('Content Script: Processing meeting details for:', eventPopupElement);
+  let attendeeCount = 1; // Default to 1 (organizer)
+  let guestTextFound = false;
+
+  // EXAMPLE SELECTOR for attendee count text - VERIFY AND UPDATE THIS SELECTOR based on live GCal DOM
+  // Looks for elements that might contain text like "X guests" or "Y attendees".
+  const guestInfoElements = eventPopupElement.querySelectorAll('span[aria-label*="guest"], div[aria-label*="guest list"] span'); 
+
+  guestInfoElements.forEach(guestInfoElement => {
+    if (guestTextFound) return; // Stop if already found
+    const text = guestInfoElement.textContent || "";
+    const match = text.match(/(\d+)\s+(guest|attendee)/i); // e.g., "2 guests", "1 attendee"
+    
+    if (match && match[1]) {
+      // Assuming "X guests" means X other people, so total = X (guests) + 1 (organizer).
+      // This logic needs verification by inspecting Google Calendar's behavior.
+      // If the count from such text already includes the organizer, the `+1` should be removed.
+      attendeeCount = parseInt(match[1], 10) + 1; 
+      guestTextFound = true;
+      console.log(`Content Script: Found guest text: "${text}", parsed attendees: ${attendeeCount}`);
+    }
+  });
+  
+  if (!guestTextFound) {
+    // Fallback: If no summary text like "X guests" is found, try to count individual attendee elements.
+    // EXAMPLE SELECTOR for individual attendee elements - VERIFY AND UPDATE THIS SELECTOR.
+    // This selector looks for elements that might represent each participant, e.g., those with a 'data-email' attribute.
+    const individualAttendeeElements = eventPopupElement.querySelectorAll('div[data-email]'); 
+    
+    if (individualAttendeeElements && individualAttendeeElements.length > 0) {
+         // This count usually includes the organizer directly.
+         attendeeCount = individualAttendeeElements.length;
+         console.log(`Content Script: No guest text found. Counted individual attendee elements: ${attendeeCount}`);
+    } else {
+        console.log("Content Script: No explicit guest count text or individual attendee elements found. Defaulting to 1 attendee (organizer). Consider inspecting DOM for better selectors if this is incorrect.");
+    }
+  }
+
+  console.log('Content Script: Extracted Attendee Count (approx) -', attendeeCount);
+
+  // const durationHours = extractDuration(eventPopupElement); // To be defined in Task 3.3
+  // console.log('Content Script: Extracted Duration (hours) -', durationHours);
+  // if (durationHours > 0 && attendeeCount > 0 && averageCostPerHour > 0) {
+  //   calculateAndDisplayCost(eventPopupElement, attendeeCount, durationHours); // To be defined in Task 3.4
+  // }
 }
 
 function observeCalendarChanges() {
