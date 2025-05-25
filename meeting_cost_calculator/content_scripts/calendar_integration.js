@@ -57,10 +57,8 @@ function processMeetingDetails(eventPopupElement) {
     const match = text.match(/(\d+)\s+(guest|attendee)/i); // e.g., "2 guests", "1 attendee"
     
     if (match && match[1]) {
-      // Assuming "X guests" means X other people, so total = X (guests) + 1 (organizer).
-      // This logic needs verification by inspecting Google Calendar's behavior.
-      // If the count from such text already includes the organizer, the `+1` should be removed.
-      attendeeCount = parseInt(match[1], 10) + 1; 
+      // Assuming "X guests" means total people
+      attendeeCount = parseInt(match[1], 10); 
       guestTextFound = true;
       console.log(`Content Script: Found guest text: "${text}", parsed attendees: ${attendeeCount}`);
     }
