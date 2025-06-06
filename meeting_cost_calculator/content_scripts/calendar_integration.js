@@ -65,6 +65,30 @@ function processMeetingDetails(eventPopupElement) {
   // if (durationHours > 0 && attendeeCount > 0 && averageCostPerHour > 0) {
   //   calculateAndDisplayCost(eventPopupElement, attendeeCount, durationHours); // To be defined in Task 3.4
   // }
+
+  // Duplicate attendee info div and insert the clone
+  duplicateGuestInfo(eventPopupElement);
+}
+
+// Duplicates the `.bgOWSb` div inside the provided event popup element
+// and appends the clone back into the same container (`#xDetDlgAtt`).
+function duplicateGuestInfo(eventPopupElement) {
+  if (!eventPopupElement || eventPopupElement.length === 0) {
+    console.warn('Content Script: duplicateGuestInfo called with invalid element');
+    return;
+  }
+
+  const container = eventPopupElement[0];
+  const textDiv = container.querySelector('.bgOWSb');
+
+  if (!textDiv) {
+    console.warn('Content Script: Could not find div.bgOWSb to duplicate');
+    return;
+  }
+
+  const clone = textDiv.cloneNode(true);
+  container.appendChild(clone);
+  console.log('Content Script: Duplicated guest info div');
 }
 
 function observeCalendarChanges() {
