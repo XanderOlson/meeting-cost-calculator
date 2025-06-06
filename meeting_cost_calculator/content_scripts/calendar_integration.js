@@ -43,27 +43,20 @@ if (chrome.storage && chrome.storage.onChanged) {
 }
 
 function processMeetingDetails(eventPopupElement) {
-  console.log('Content Script: Processing meeting details for:', eventPopupElement);
+  console.log('Content Script: Processing meeting details for:', eventPopupElement[0].innerText);
   let attendeeCount = 1; // Default to 1 (organizer)
   let guestTextFound = false;
-
-  // EXAMPLE SELECTOR for attendee count text - VERIFY AND UPDATE THIS SELECTOR based on live GCal DOM
-  // Looks for elements that might contain text like "X guests" or "Y attendees".
-  const guestInfoElements = document.querySelectorAll('[id="xDetDlgAtt"]'); 
-
-  guestInfoElements.forEach(guestInfoElement => {
-    if (guestTextFound) return; // Stop if already found
-    const text = guestInfoElement[0].innerText.split("\n")[0] || "";
-    // Match patterns like "2 guests" or "1 attendee" (plural forms allowed)
-    const match = text.match(/(\d+)\s+(?:guest|attendee)s?/i);
-    
-    if (match && match[1]) {
-      // Assuming "X guests" means total people
-      attendeeCount = parseInt(match[1], 10); 
-      guestTextFound = true;
-      console.log(`Content Script: Found guest text: "${text}", parsed attendees: ${attendeeCount}`);
-    }
-  });
+  const guestText = eventPopupElement[0].innerText.split("\n")[0];
+  // Match patterns like "2 guests" or "1 attendee" (plural forms allowed)
+  const match = guestText.match(/(\d+)\s+(?:guest|attendee)s?/i);
+  
+  if (match && match[1]) {
+    // Assuming "X guests" means total people
+    attendeeCount = parseInt(match[1], 10); 
+    guestTextFound = true;
+    console.log(`Content Script: Found guest text: "${guestText}", parsed attendees: ${attendeeCount}`);
+  }
+  ;
 
   console.log('Content Script: Extracted Attendee Count (approx) -', attendeeCount);
 
@@ -77,6 +70,7 @@ function processMeetingDetails(eventPopupElement) {
 function observeCalendarChanges() {
   const targetNode = document.body;
   const config = { childList: true, subtree: true };
+  let costProcessed = false;
 
   const callback = function(mutationsList, observer) {
     for(const mutation of mutationsList) {
@@ -84,14 +78,20 @@ function observeCalendarChanges() {
         // EXAMPLE SELECTOR - This may need verification and adjustment against the live Google Calendar DOM.
         const eventPopup = document.querySelectorAll('[id="xDetDlgAtt"]');
         
-        if (eventPopup && !eventPopup.dataset.costProcessed) {
+        // Check if the event popup element exists
+        if (!eventPopup || eventPopup.length === 0) {
+          console.warn('Content Script: Could not find event popup element');
+          return;
+        }
+        
+        if (eventPopup[0].innerText && !costProcessed) {
           console.log('Content Script: Event detail pop-up detected.', eventPopup);
-          eventPopup.dataset.costProcessed = 'true'; // Mark as processed to avoid re-processing
+          costProcessed = true; // Mark as processed to avoid re-processing
           
           // Give GCal a moment to fully render the popup's content before processing
           setTimeout(() => {
             processMeetingDetails(eventPopup);
-          }, 500); // Small delay, adjust if necessary
+          }, 200); // Small delay, adjust if necessary
         }
       }
     }
@@ -103,4 +103,4 @@ function observeCalendarChanges() {
 }
 
 // Call it after a short delay to give GCal time to initialize its main UI
-setTimeout(observeCalendarChanges, 2000);
+setTimeout(observeCalendarChanges, 500);
