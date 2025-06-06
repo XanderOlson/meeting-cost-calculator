@@ -54,7 +54,8 @@ function processMeetingDetails(eventPopupElement) {
   guestInfoElements.forEach(guestInfoElement => {
     if (guestTextFound) return; // Stop if already found
     const text = guestInfoElement.textContent || "";
-    const match = text.match(/(\d+)\s+(guest|attendee)/i); // e.g., "2 guests", "1 attendee"
+    // Match patterns like "2 guests" or "1 attendee" (plural forms allowed)
+    const match = text.match(/(\d+)\s+(?:guest|attendee)s?/i);
     
     if (match && match[1]) {
       // Assuming "X guests" means total people
