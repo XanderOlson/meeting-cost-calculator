@@ -49,11 +49,11 @@ function processMeetingDetails(eventPopupElement) {
 
   // EXAMPLE SELECTOR for attendee count text - VERIFY AND UPDATE THIS SELECTOR based on live GCal DOM
   // Looks for elements that might contain text like "X guests" or "Y attendees".
-  const guestInfoElements = eventPopupElement.querySelectorAll('span[aria-label*="guest"], div[aria-label*="guest list"] span'); 
+  const guestInfoElements = document.querySelectorAll('[id="xDetDlgAtt"]'); 
 
   guestInfoElements.forEach(guestInfoElement => {
     if (guestTextFound) return; // Stop if already found
-    const text = guestInfoElement.textContent || "";
+    const text = guestInfoElement[0].innerText.split("\n")[0] || "";
     // Match patterns like "2 guests" or "1 attendee" (plural forms allowed)
     const match = text.match(/(\d+)\s+(?:guest|attendee)s?/i);
     
@@ -64,21 +64,6 @@ function processMeetingDetails(eventPopupElement) {
       console.log(`Content Script: Found guest text: "${text}", parsed attendees: ${attendeeCount}`);
     }
   });
-  
-  if (!guestTextFound) {
-    // Fallback: If no summary text like "X guests" is found, try to count individual attendee elements.
-    // EXAMPLE SELECTOR for individual attendee elements - VERIFY AND UPDATE THIS SELECTOR.
-    // This selector looks for elements that might represent each participant, e.g., those with a 'data-email' attribute.
-    const individualAttendeeElements = eventPopupElement.querySelectorAll('div[data-email]'); 
-    
-    if (individualAttendeeElements && individualAttendeeElements.length > 0) {
-         // This count usually includes the organizer directly.
-         attendeeCount = individualAttendeeElements.length;
-         console.log(`Content Script: No guest text found. Counted individual attendee elements: ${attendeeCount}`);
-    } else {
-        console.log("Content Script: No explicit guest count text or individual attendee elements found. Defaulting to 1 attendee (organizer). Consider inspecting DOM for better selectors if this is incorrect.");
-    }
-  }
 
   console.log('Content Script: Extracted Attendee Count (approx) -', attendeeCount);
 
