@@ -82,7 +82,7 @@ function observeCalendarChanges() {
     for(const mutation of mutationsList) {
       if (mutation.type === 'childList') {
         // EXAMPLE SELECTOR - This may need verification and adjustment against the live Google Calendar DOM.
-        const eventPopup = document.querySelector('div[role="dialog"][aria-modal="true"][data-calendar-id]');
+        const eventPopup = document.querySelectorAll('[id="xDetDlgAtt"]');
         
         if (eventPopup && !eventPopup.dataset.costProcessed) {
           console.log('Content Script: Event detail pop-up detected.', eventPopup);
