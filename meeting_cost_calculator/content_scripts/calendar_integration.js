@@ -94,7 +94,7 @@ function duplicateGuestInfo(eventPopupElement) {
   const costText = " Meeting Cost: $" + meetingCost + " / hr";
   clone.textContent = costText;
   container.appendChild(clone);
-  console.log('Content Script: Duplicated guest info div');
+  console.log('Content Script: Duplicated guest info div with cost text');
 }
 
 function observeCalendarChanges() {
