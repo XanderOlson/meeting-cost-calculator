@@ -1,6 +1,7 @@
 console.log("Meeting Cost Calculator: Content script loaded on Google Calendar.");
 
 let averageCostPerHour = 0; // Default value
+let meetingCost = 0; // attendeeCount * averageCostPerHour
 
 function loadAverageCost() {
   if (chrome.storage && chrome.storage.sync) {
@@ -59,6 +60,9 @@ function processMeetingDetails(eventPopupElement) {
   ;
 
   console.log('Content Script: Extracted Attendee Count (approx) -', attendeeCount);
+
+  meetingCost = attendeeCount * averageCostPerHour;
+  console.log('Content Script: Meeting Cost (per hour) -', meetingCost);
 
   // const durationHours = extractDuration(eventPopupElement); // To be defined in Task 3.3
   // console.log('Content Script: Extracted Duration (hours) -', durationHours);
