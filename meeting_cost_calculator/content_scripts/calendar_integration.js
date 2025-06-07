@@ -2,6 +2,8 @@ console.log("Meeting Cost Calculator: Content script loaded on Google Calendar."
 
 let averageCostPerHour = 0; // Default value
 let meetingCost = 0; // attendeeCount * averageCostPerHour
+// ID assigned to each duplicated cost element for easy lookup
+const costDisplayId = 'mcc-cost-display';
 
 function loadAverageCost() {
   if (chrome.storage && chrome.storage.sync) {
@@ -93,6 +95,7 @@ function duplicateGuestInfo(eventPopupElement) {
   const clone = textDiv.cloneNode(true);
   const costText = " Meeting Cost: $" + meetingCost + " / hr";
   clone.textContent = costText;
+  clone.id = costDisplayId;
   container.appendChild(clone);
   console.log('Content Script: Duplicated guest info div with cost text');
 }
