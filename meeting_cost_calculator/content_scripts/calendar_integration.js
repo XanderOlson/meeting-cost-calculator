@@ -103,7 +103,9 @@ function duplicateGuestInfo(eventPopupElement) {
 function observeCalendarChanges() {
   const targetNode = document.body;
   const config = { childList: true, subtree: true };
-  let costProcessed = false;
+  // Instead of relying on a processed flag, we'll check for our cost
+  // display element by ID to determine if the popup has already been
+  // processed. If it exists, we skip further handling for that popup.
 
   const callback = function(mutationsList, observer) {
     for(const mutation of mutationsList) {
@@ -117,9 +119,12 @@ function observeCalendarChanges() {
           return;
         }
         
-        if (eventPopup[0].innerText && !costProcessed) {
+        if (eventPopup[0].innerText) {
+          // If we already inserted the cost display element, skip processing
+          if (eventPopup[0].querySelector(`#${costDisplayId}`)) {
+            return;
+          }
           console.log('Content Script: Event detail pop-up detected.', eventPopup);
-          costProcessed = true; // Mark as processed to avoid re-processing
           
           // Give GCal a moment to fully render the popup's content before processing
           setTimeout(() => {
