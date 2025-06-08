@@ -1,0 +1,17 @@
+{
+  "name": "meeting-cost-calculator",
+  "version": "1.0.0",
+  "description": "Tiny chrome extension to tell me much a meeting costs",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.0-beta.3"
+  }
+}

@@ -142,3 +142,14 @@ function observeCalendarChanges() {
 
 // Call it after a short delay to give GCal time to initialize its main UI
 setTimeout(observeCalendarChanges, 500);
+
+// Export functions for testing in Node environment
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    loadAverageCost,
+    processMeetingDetails,
+    duplicateGuestInfo,
+    observeCalendarChanges,
+    _getInternalState: () => ({ averageCostPerHour, meetingCost }),
+  };
+}
